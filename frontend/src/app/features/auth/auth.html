@@ -1,0 +1,64 @@
+<section class="auth-shell">
+    <div class="hero-card">
+        <p class="eyebrow">DuelComp</p>
+        <h1>Show off your skills against the best players in your favorite games.</h1>
+        <p class="hero-copy">
+            Desc.
+        </p>
+
+        <div class="hero-points">
+            <span>Icon1</span>
+            <span>Icon2</span>
+            <span>Icon3</span>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <div class="form-header">
+            <p class="eyebrow">{{ mode() === 'login' ? 'Sign in' : 'Create account' }}</p>
+            <h2>{{ mode() === 'login' ? 'Access your account' : 'Register your account' }}</h2>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+            @if (mode() === 'register') {
+            <label>
+                <span>Name</span>
+                <input type="text" formControlName="name" placeholder="John Doe" />
+            </label>
+
+            <label>
+                <span>Username</span>
+                <input type="text" formControlName="username" placeholder="JD_23" />
+            </label>
+            }
+
+            <label>
+                <span>Email or Username</span>
+                <input formControlName="identifier" placeholder="Username or Email" />
+            </label>
+
+            <label>
+                <span>Password</span>
+                <input type="password" formControlName="password" placeholder="At least 6 characters" />
+            </label>
+
+            @if (errorMessage()) {
+            <p class="feedback error">{{ errorMessage() }}</p>
+            }
+
+            <button type="submit" [disabled]="isSubmitting()">
+                {{ isSubmitting() ? 'Processing...' : mode() === 'login' ? 'Sign in' : 'Register' }}
+            </button>
+        </form>
+
+        <p class="switch-link">
+            @if (mode() === 'login') {
+            Don&apos;t have an account?
+            <a routerLink="/register">Create one now</a>
+            } @else {
+            Already registered?
+            <a routerLink="/login">Back to sign in</a>
+            }
+        </p>
+    </div>
+</section>
