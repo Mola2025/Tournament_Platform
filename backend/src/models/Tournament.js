@@ -20,10 +20,12 @@ const tournamentModel = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    players: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
+    players: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     status: {
       type: String,
       enum: ["open", "ongoing", "finished"],

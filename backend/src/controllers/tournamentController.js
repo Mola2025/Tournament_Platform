@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const Tournament = require("../models/Tournament");
+const {
+  emitPlayerJoinedTournament,
+  emitGlobalAlert,
+} = require("../sockets/socket");
 
 const tournamentPopulate = [
   { path: "players", select: "_id username email" },
@@ -142,6 +146,11 @@ const updateTournament = async (req, res) => {
       },
     ).populate(tournamentPopulate);
 
+    // Emit global alert if tournament status changed to ongoing
+    if ("status" in req.body && status === "ongoing") {
+      emitGlobalAlert(updatedTournament.title);
+    }
+
     return res.status(200).json({
       message: "Tournament updated successfully.",
       data: { tournament: updatedTournament },
@@ -192,10 +201,108 @@ const deleteTournament = async (req, res) => {
   }
 };
 
+const joinTournament = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized." });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid Tournament Id." });
+    }
+
+    const tournament = await Tournament.findById(id);
+
+    if (!tournament) {
+      return res.status(404).json({ message: "Tournament not found." });
+    }
+
+    if (tournament.createdBy.toString() === req.user.id) {
+      return res.status(400).json({
+        message:
+          "You are the creator of this tournament and cannot join as a player.",
+      });
+    }
+
+    if (tournament.status !== "open") {
+      return res
+        .status(400)
+        .json({ message: "Tournament is not open for registration." });
+    }
+
+    const alreadyJoined = tournament.players.some(
+      (playerId) => playerId.toString() === req.user.id,
+    );
+
+    if (alreadyJoined) {
+      return res
+        .status(400)
+        .json({ message: "You already joined this tournament." });
+    }
+
+    tournament.players.push(req.user.id);
+    await tournament.save();
+    await tournament.populate(tournamentPopulate);
+
+    // Emit player joined tournament event
+    emitPlayerJoinedTournament(req.user, tournament);
+
+    return res.status(200).json({
+      message: "Joined tournament successfully.",
+      data: { tournament },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error while joining tournament." });
+  }
+};
+
+const leaveTournament = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid Tournament Id." });
+    }
+
+    const tournament = await Tournament.findById(id);
+
+    if (!tournament) {
+      return res.status(404).json({ message: "Tournament not found." });
+    }
+
+    const playerIndex = tournament.players.findIndex(
+      (playerId) => playerId.toString() === req.user.id,
+    );
+    if (playerIndex === -1) {
+      return res
+        .status(400)
+        .json({ message: "You are not registered for this tournament." });
+    }
+
+    tournament.players.splice(playerIndex, 1);
+    await tournament.save();
+    await tournament.populate(tournamentPopulate);
+
+    return res.status(200).json({
+      message: "You have left the tournament successfully.",
+      data: { tournament },
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error while attempting to leave the tournament." });
+  }
+};
+
 module.exports = {
   createTournament,
   getTournaments,
   getTournamentById,
+  joinTournament,
+  leaveTournament,
   updateTournament,
   deleteTournament,
 };

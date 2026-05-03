@@ -1,0 +1,101 @@
+<div class="p-6">
+
+    <!-- Toast Notification -->
+    @if (toastMessage()) {
+    <div
+        class="fixed top-5 right-5 z-50 flex items-center gap-3 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl border border-gray-700 max-w-sm animate-fade-in">
+        <span class="text-sm font-medium leading-snug">{{ toastMessage() }}</span>
+        <button (click)="dismissToast()"
+            class="ml-2 text-gray-400 hover:text-white transition-colors text-lg leading-none">×</button>
+    </div>
+    }
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Matches</h1>
+        <div class="flex gap-2">
+            <!-- <button (click)="refreshMatches()"
+                class="text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded border border-gray-300 hover:bg-gray-50 transition-colors">
+                ↺ Refresh
+            </button> -->
+            <button (click)="goToForm()"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+                + Create Match
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    @if (isLoading()) {
+    <div class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span class="ml-3 text-gray-500">Loading matches...</span>
+    </div>
+    }
+
+    <!-- Error -->
+    @if (pageError()) {
+    <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-4 flex items-center justify-between">
+        <span>{{ pageError() }}</span>
+        <button (click)="refreshMatches()" class="text-red-500 hover:text-red-700 text-sm underline ml-4">
+            Retry
+        </button>
+    </div>
+    }
+
+    <!-- Empty state -->
+    @if (!isLoading() && !pageError() && !hasMatches()) {
+    <div class="text-center py-16 text-gray-400">
+        <p class="text-lg mb-2">No matches found.</p>
+        <p class="text-sm">Create the first match to get started.</p>
+    </div>
+    }
+
+    <!-- Matches Grid -->
+    @if (!isLoading() && hasMatches()) {
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        @for (match of filteredMatches(); track match._id) {
+        <div class="card bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md">
+
+            <!-- Status Badge + Delete (only for creator) -->
+            <div class="flex justify-between items-start mb-3">
+                <span
+                    class="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded-full transition-colors duration-500"
+                    [ngClass]="getStatusClass(match.status)">
+                    {{ match.status }}
+                </span>
+                @if (isCreatorOf(match)) {
+                <button (click)="deleteMatch(match._id)"
+                    class="text-red-400 hover:text-red-600 transition-colors text-sm" title="Delete match">
+                    🗑
+                </button>
+                }
+            </div>
+
+            <!-- Players vs -->
+            <div class="text-center my-3">
+                <p class="text-lg font-bold text-gray-800">
+                    {{ match.player1?.username ?? 'Player 1' }}
+                    <span class="text-gray-400 font-normal mx-1">vs</span>
+                    {{ match.player2?.username ?? 'Player 2' }}
+                </p>
+            </div>
+
+            <!-- Score -->
+            <div class="text-center text-3xl font-mono font-bold text-gray-700 mb-4 transition-all duration-300">
+                {{ match.score?.player1 ?? 0 }} — {{ match.score?.player2 ?? 0 }}
+            </div>
+
+            <!-- View Detail (only for creator) -->
+            @if (isCreatorOf(match)) {
+            <button (click)="goToDetail(match._id)"
+                class="w-full text-sm text-blue-600 hover:text-blue-800 border border-blue-200 hover:bg-blue-50 rounded-lg py-2 transition-colors">
+                View Detail →
+            </button>
+            }
+
+        </div>
+        }
+    </div>
+    }
+</div>

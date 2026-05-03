@@ -1,0 +1,116 @@
+<div class="p-6 max-w-lg mx-auto">
+
+    <!-- Back -->
+    <button (click)="goBack()" class="text-sm text-gray-500 hover:text-gray-700 mb-6 inline-flex items-center gap-1">
+        ← Back
+    </button>
+
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Create Match</h1>
+
+    <!-- Success -->
+    @if (successMessage()) {
+    <div class="bg-green-50 border border-green-200 text-green-700 rounded-lg p-4 mb-4">
+        {{ successMessage() }}
+    </div>
+    }
+
+    <!-- Error -->
+    @if (pageError()) {
+    <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-4">
+        {{ pageError() }}
+    </div>
+    }
+
+    <!-- Same player validation error -->
+    @if (hasSamePlayerError()) {
+    <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-3 mb-4 text-sm">
+        ⚠️ Player 1 and Player 2 must be different.
+    </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+
+        <!-- Tournament Select -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                Tournament <span class="text-red-500">*</span>
+            </label>
+
+            @if (isLoadingTournaments()) {
+            <div class="text-sm text-gray-400 py-2">Loading your tournaments...</div>
+            } @else if (myTournaments().length === 0) {
+            <div class="text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                You haven't created any tournaments yet.
+            </div>
+            } @else {
+            <select title="tournamentId" formControlName="tournamentId" (change)="onTournamentChange()"
+                class="border p-2 w-full rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                [class.border-red-400]="isFieldInvalid('tournamentId')">
+                <option value="" disabled>Select a tournament</option>
+                @for (t of myTournaments(); track t._id) {
+                <option [value]="t._id">{{ t.title }}</option>
+                }
+            </select>
+            }
+
+            @if (isFieldInvalid('tournamentId')) {
+            <p class="text-red-500 text-xs mt-1">Tournament is required.</p>
+            }
+        </div>
+
+        <!-- Player 1 -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                Player 1 <span class="text-red-500">*</span>
+            </label>
+            <select title="player1" formControlName="player1"
+                class="border p-2 w-full rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-400"
+                [class.border-red-400]="isFieldInvalid('player1')"
+                [attr.disabled]="availablePlayers().length === 0 ? true : null">
+                <option value="" disabled>
+                    {{ availablePlayers().length === 0 ? 'Select a tournament first' : 'Select Player 1' }}
+                </option>
+                @for (player of availablePlayers(); track player._id) {
+                <option [value]="player._id">{{ player.username }}</option>
+                }
+            </select>
+            @if (isFieldInvalid('player1')) {
+            <p class="text-red-500 text-xs mt-1">Player 1 is required.</p>
+            }
+        </div>
+
+        <!-- Player 2 -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                Player 2 <span class="text-red-500">*</span>
+            </label>
+            <select title="player2" formControlName="player2"
+                class="border p-2 w-full rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-400"
+                [class.border-red-400]="isFieldInvalid('player2')"
+                [attr.disabled]="availablePlayers().length === 0 ? true : null">
+                <option value="" disabled>
+                    {{ availablePlayers().length === 0 ? 'Select a tournament first' : 'Select Player 2' }}
+                </option>
+                @for (player of availablePlayers(); track player._id) {
+                <option [value]="player._id">{{ player.username }}</option>
+                }
+            </select>
+            @if (isFieldInvalid('player2')) {
+            <p class="text-red-500 text-xs mt-1">Player 2 is required.</p>
+            }
+        </div>
+
+        <!-- Submit -->
+        <div class="pt-2">
+            <button type="submit" [disabled]="isLoading() || isLoadingTournaments()"
+                class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-medium w-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                @if (isLoading()) {
+                <span>Creating...</span>
+                } @else {
+                <span>Create Match</span>
+                }
+            </button>
+        </div>
+
+    </form>
+</div>

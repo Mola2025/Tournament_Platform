@@ -8,15 +8,36 @@ interface TournamentData {
     title?: string;
     game?: string;
     description?: string;
+    status?: "open" | "ongoing" | "finished";
 }
 
 @Injectable({ providedIn: "root" })
 export class TournamentService {
     private readonly http = inject(HttpClient);
 
-    getTournaments() {
+    getTournaments(filter?: 'created' | 'joined') {
+        const params = filter ? `?filter=${filter}` : '';
         return this.http.get<ApiResponse<{ tournaments: TournamentItem[] }>>(
-            `${environment.apiUrl}/tournaments`,
+            `${environment.apiUrl}/tournaments${params}`,
+        );
+    }
+
+    getTournamentById(id: string) {
+        return this.http.get<ApiResponse<{ tournament: TournamentItem }>>(
+            `${environment.apiUrl}/tournaments/${id}`,
+        );
+    }
+
+    joinTournament(tournamentId: string) {
+        return this.http.post<ApiResponse<{ tournament: TournamentItem }>>(
+            `${environment.apiUrl}/tournaments/${tournamentId}/join`,
+            {}
+        );
+    }
+
+    leaveTournament(tournamentId: string) {
+        return this.http.delete<ApiResponse<{ tournament: TournamentItem }>>(
+            `${environment.apiUrl}/tournaments/${tournamentId}/leave`
         );
     }
 

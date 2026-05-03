@@ -30,12 +30,19 @@
                 <span>Username</span>
                 <input type="text" formControlName="username" placeholder="JD_23" />
             </label>
+
+            <label>
+                <span>Email</span>
+                <input type="email" formControlName="email" placeholder="example@email.com" />
+            </label>
             }
 
+            @if (mode() === 'login') {
             <label>
                 <span>Email or Username</span>
                 <input formControlName="identifier" placeholder="Username or Email" />
             </label>
+            }
 
             <label>
                 <span>Password</span>

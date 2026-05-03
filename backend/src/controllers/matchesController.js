@@ -2,12 +2,16 @@ const mongoose = require("mongoose");
 const Match = require("../models/Match");
 const User = require("../models/User");
 const Tournament = require("../models/Tournament");
+const {
+  emitMatchScoreUpdate,
+  emitMatchStatusChange,
+} = require("../sockets/socket");
 
 const matchPopulate = [
   { path: "player1", select: "_id username email" },
   { path: "player2", select: "_id username email" },
   { path: "winner", select: "_id username email" },
-  { path: "tournamentId", select: "_id title" },
+  { path: "tournamentId", select: "_id title createdBy" },
 ];
 
 const createMatch = async (req, res) => {
@@ -157,24 +161,27 @@ const updateMatch = async (req, res) => {
       return res.status(404).json({ message: "Match not found." });
     }
 
+    // Verify the user is the tournament creator or an admin
+    const tournament = await Tournament.findById(match.tournamentId);
+    if (!tournament) {
+      return res.status(404).json({ message: "Tournament not found." });
+    }
+
+    const isCreator = tournament.createdBy.toString() === req.user.id;
+    const isAdmin = req.user.role === "admin";
+
+    if (!isCreator && !isAdmin) {
+      return res.status(403).json({
+        message: "Only the tournament creator or an admin can update matches.",
+      });
+    }
+
     const finalStatus = "status" in req.body ? status : match.status;
 
     // Not allowing winner to be set if status is not finished
     if ("winner" in req.body && finalStatus !== "finished") {
       return res.status(400).json({
         message: "Winner can only be set when match status is 'finished'.",
-      });
-    }
-
-    // Cannot set status to finished without a winner
-    if (
-      "status" in req.body &&
-      status === "finished" &&
-      !winner &&
-      !match.winner
-    ) {
-      return res.status(400).json({
-        message: "Cannot set status to finished without a winner.",
       });
     }
 
@@ -194,12 +201,36 @@ const updateMatch = async (req, res) => {
       }
     }
 
+    // Auto-calculate winner when finishing the match based on score
+    let autoWinner = match.winner;
+
+    if ("status" in req.body && status === "finished") {
+      const finalScore = "score" in req.body ? score : match.score;
+      const p1Score = finalScore?.player1 ?? 0;
+      const p2Score = finalScore?.player2 ?? 0;
+
+      if (p1Score > p2Score) {
+        autoWinner = match.player1;
+      } else if (p2Score > p1Score) {
+        autoWinner = match.player2;
+      } else {
+        autoWinner = null; // Tie
+      }
+    }
+
     const updateData = {};
 
     if ("score" in req.body) updateData.score = score;
     if ("winner" in req.body) updateData.winner = winner || null;
-    if ("status" in req.body) updateData.status = status;
+    if ("status" in req.body) {
+      updateData.status = status;
+      // Apply auto-calculated winner when finishing
+      if (status === "finished") {
+        updateData.winner = autoWinner;
+      }
+    }
 
+    // If winner is manually set, ensure status is finished
     if ("winner" in req.body && winner) {
       updateData.status = "finished";
     }
@@ -208,6 +239,15 @@ const updateMatch = async (req, res) => {
       new: true,
       runValidators: true,
     }).populate(matchPopulate);
+
+    // Emit real-time updates for score and status changes for the matches
+    if ("score" in req.body) {
+      emitMatchScoreUpdate(updatedMatch);
+    }
+
+    if ("status" in req.body) {
+      emitMatchStatusChange(updatedMatch);
+    }
 
     return res.status(200).json({
       message: "Match updated successfully.",
@@ -235,6 +275,21 @@ const deleteMatch = async (req, res) => {
 
     if (!match) {
       return res.status(404).json({ message: "Match not found." });
+    }
+
+    // Verify the user is the tournament creator or an admin
+    const tournament = await Tournament.findById(match.tournamentId);
+    if (!tournament) {
+      return res.status(404).json({ message: "Tournament not found." });
+    }
+
+    const isCreator = tournament.createdBy.toString() === req.user.id;
+    const isAdmin = req.user.role === "admin";
+
+    if (!isCreator && !isAdmin) {
+      return res.status(403).json({
+        message: "Only the tournament creator or an admin can delete matches.",
+      });
     }
 
     await match.deleteOne();

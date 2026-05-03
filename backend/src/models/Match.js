@@ -18,8 +18,8 @@ const matchModel = new mongoose.Schema(
       required: true,
     },
     score: {
-      type: String,
-      default: "",
+      player1: { type: Number, default: 0 },
+      player2: { type: Number, default: 0 },
     },
     winner: {
       type: mongoose.Schema.Types.ObjectId,

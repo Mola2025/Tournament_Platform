@@ -1,0 +1,76 @@
+// <nav class="navbar">
+//   <a routerLink="/materials" class="navbar-brand">MATERIAL HUB</a>
+//   <div class="navbar-menu">
+//     <ng-container *ngIf="isLoggedIn">
+//       <a routerLink="/materials/new" class="nav-link">New Material</a>
+//       <button (click)="logout()" class="nav-link btn-logout">Logout</button>
+//     </ng-container>
+
+//     <ng-container *ngIf="!isLoggedIn">
+//       <a routerLink="/login" class="nav-link">Login</a>
+//       <a routerLink="/signup" class="nav-link">Sign Up</a>
+//     </ng-container>
+//   </div>
+// </nav>
+
+.navbar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: rgb(39, 38, 38);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand{
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+
+  &:hover{
+    color: #ece8e8;
+  }
+}
+
+.navbar-menu{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link{
+  padding: 8px 12px;
+  color: rgb(244, 246, 248);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 15px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  &:hover{
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+
+  &.active{
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+}
+
+
+.btn-logout{
+  color: orangered;
+
+  &:hover{
+    background: rgb(124, 10, 2);
+    color: white;
+  }
+}
+
+.brand-accent{
+  color: #f59e0b;
+}

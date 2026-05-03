@@ -1,1 +1,119 @@
-<p>tournament-form works!</p>
+<div class="min-h-screen bg-gray-950 text-white p-6 flex items-start justify-center">
+    <div class="w-full max-w-xl">
+
+        <!-- Back -->
+        <button (click)="goBack()"
+            class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors mb-6">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Tournaments
+        </button>
+
+        <!-- Page title -->
+        <h1 class="text-2xl font-extrabold tracking-tight mb-1">
+            {{ isEditing() ? 'Edit Tournament' : 'New Tournament' }}
+        </h1>
+        <p class="text-gray-400 text-sm mb-8">
+            {{ isEditing() ? 'Update the details below and save.' : 'Fill in the details to create a new tournament.' }}
+        </p>
+
+        <!-- Error -->
+        @if (pageError()) {
+        <div
+            class="mb-6 flex items-center gap-3 bg-red-900/40 border border-red-700 text-red-300 px-4 py-3 rounded-xl text-sm">
+            <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-11.25a.75.75 0 011.5 0v4.5a.75.75 0 01-1.5 0v-4.5zm.75 7a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                    clip-rule="evenodd" />
+            </svg>
+            {{ pageError() }}
+        </div>
+        }
+
+        <!-- Loading -->
+        @if (isLoadingData()) {
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8 animate-pulse space-y-5">
+            <div class="h-10 bg-gray-800 rounded-xl"></div>
+            <div class="h-10 bg-gray-800 rounded-xl"></div>
+            <div class="h-24 bg-gray-800 rounded-xl"></div>
+        </div>
+        }
+
+        <!-- Form -->
+        @if (!isLoadingData()) {
+        <form [formGroup]="tournamentForm" (ngSubmit)="submitTournament()"
+            class="bg-gray-900 border border-gray-800 rounded-2xl p-8 space-y-5">
+
+            <!-- Title -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5" for="title">
+                    Title <span class="text-red-400">*</span>
+                </label>
+                <input id="title" type="text" formControlName="title" placeholder="e.g. Summer Championship 2025"
+                    class="form-input w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-500 px-4 py-3 rounded-xl text-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                    [class.border-red-500]="titleControl.invalid && titleControl.touched" />
+                @if (titleControl.invalid && titleControl.touched) {
+                <p class="mt-1.5 text-xs text-red-400">
+                    @if (titleControl.errors?.['required']) { Title is required. }
+                    @else if (titleControl.errors?.['minlength']) { Title must be at least 3 characters. }
+                </p>
+                }
+            </div>
+
+            <!-- Game -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5" for="game">
+                    Game <span class="text-red-400">*</span>
+                </label>
+                <input id="game" type="text" formControlName="game" placeholder="e.g. League of Legends, Chess, CS2…"
+                    class="form-input w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-500 px-4 py-3 rounded-xl text-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                    [class.border-red-500]="gameControl.invalid && gameControl.touched" />
+                @if (gameControl.invalid && gameControl.touched) {
+                <p class="mt-1.5 text-xs text-red-400">Game is required.</p>
+                }
+            </div>
+
+            <!-- Status -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5" for="status">
+                    Status
+                </label>
+                <select id="status" formControlName="status"
+                    class="form-input w-full bg-gray-800 border border-gray-700 text-white px-4 py-3 rounded-xl text-sm outline-none transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
+                    <option value="open">Open</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="finished">Finished</option>
+                </select>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5"
+                    for="description">
+                    Description
+                    <span class="text-gray-600 font-normal normal-case">(optional)</span>
+                </label>
+                <textarea id="description" formControlName="description" placeholder="Rules, prizes, format…" rows="4"
+                    class="form-input w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-500 px-4 py-3 rounded-xl text-sm outline-none transition-all resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"></textarea>
+            </div>
+
+            <!-- Submit -->
+            <div class="flex items-center gap-3 pt-2">
+                <button type="submit" [disabled]="isSaving()"
+                    class="flex-1 bg-indigo-600 hover:bg-indigo-500 transition-colors text-white font-semibold px-5 py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    @if (isSaving()) { Saving… }
+                    @else if (isEditing()) { Save Changes }
+                    @else { Create Tournament }
+                </button>
+                <button type="button" (click)="goBack()"
+                    class="px-5 py-3 bg-gray-800 hover:bg-gray-700 transition-colors text-gray-300 font-semibold rounded-xl text-sm">
+                    Cancel
+                </button>
+            </div>
+
+        </form>
+        }
+
+    </div>
+</div>

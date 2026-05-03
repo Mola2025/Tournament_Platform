@@ -8,9 +8,9 @@ interface MatchData {
     tournamentId?: string;
     player1?: string;
     player2?: string;
-    score?: string;
-    winner?: string | null;
-    status?: "pending" | "in_progress" | "finished";
+    score?: { player1: number; player2: number };
+    status?: 'pending' | 'live' | 'finished';
+    winner?: string;
 }
 
 @Injectable({ providedIn: "root" })
@@ -20,6 +20,12 @@ export class MatchService {
     getMatches() {
         return this.http.get<ApiResponse<{ matches: MatchItem[] }>>(
             `${environment.apiUrl}/matches`,
+        );
+    }
+
+    getMatchById(matchId: string) {
+        return this.http.get<ApiResponse<{ match: MatchItem }>>(
+            `${environment.apiUrl}/matches/${matchId}`,
         );
     }
 

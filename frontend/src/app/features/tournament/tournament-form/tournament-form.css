@@ -1,0 +1,10 @@
+input.form-input,
+textarea.form-input {
+    border-radius: 6px;
+    caret-color: #818cf8;
+}
+
+input.form-input::placeholder,
+textarea.form-input::placeholder {
+    opacity: 0.45;
+}

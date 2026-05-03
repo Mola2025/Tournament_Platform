@@ -1,0 +1,19 @@
+@if (isLoggedIn()) {
+<nav class="navbar">
+  <h1 class="text-3xl font-black text-white tracking-tight">
+    Duel<span class="text-amber-400">Comp</span>
+  </h1>
+  <p class="text-gray-400 text-sm">Your competitive gaming tournament hub </p>
+  <div class="navbar-menu">
+    <ng-container *ngIf="isLoggedIn">
+      <a routerLink="/tournaments" routerLinkActive="active" class="nav-link"
+        [routerLinkActiveOptions]="{ exact: true }">Tournaments</a>
+      <a routerLink="/matches" routerLinkActive="active" class="nav-link"
+        [routerLinkActiveOptions]="{ exact: true }">Current Matches</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-link"
+        [routerLinkActiveOptions]="{ exact: true }">Profile</a>
+      <button (click)="logout()" class="nav-link btn-logout">Logout</button>
+    </ng-container>
+  </div>
+</nav>
+}

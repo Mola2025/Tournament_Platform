@@ -1,5 +1,5 @@
 export interface UserProfile {
-    id: string;
+    _id: string;
     name: string;
     username: string;
     email: string;
@@ -21,30 +21,40 @@ export interface TournamentItem {
         name: string;
         email: string;
     };
-    status: "open" | "closed" | "finished";
+    players: {
+        _id: string;
+        username: string;
+        email: string;
+    }[];
+    status: "open" | "ongoing" | "finished";
     createdAt: string;
     updatedAt: string;
 }
 
+export interface PlayerRef {
+    _id: string;
+    username: string;
+}
+
+export interface MatchScore {
+    player1: number;
+    player2: number;
+}
+
+export interface MatchTournamentRef {
+    _id: string;
+    title: string;
+    createdBy: string;
+}
+
 export interface MatchItem {
     _id: string;
-    tournamentId: {
-        _id: string;
-        title: string;
-    };
-    player1: {
-        _id: string;
-        username: string;
-        email: string;
-    };
-    player2: {
-        _id: string;
-        username: string;
-        email: string;
-    };
-    score: string;
-    winner: string | null;
-    status: "pending" | "in_progress" | "finished";
+    tournamentId: MatchTournamentRef | string;
+    player1: PlayerRef;
+    player2: PlayerRef;
+    score: MatchScore;
+    winner?: PlayerRef | null;
+    status: 'pending' | 'live' | 'finished';
     createdAt: string;
     updatedAt: string;
 }
