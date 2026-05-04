@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const authRoutes = require("./routes/AuthenticationRoutes");
 const tournamentRoutes = require("./routes/TournamentRoutes");
 const matchRoutes = require("./routes/MatchesRoutes");
