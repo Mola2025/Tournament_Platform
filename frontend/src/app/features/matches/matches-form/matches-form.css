@@ -1,5 +1,11 @@
-select,
-input,
-textarea {
+input.form-input,
+textarea.form-input,
+select.form-input {
     border-radius: 6px;
+    caret-color: #818cf8;
+}
+
+input.form-input::placeholder,
+textarea.form-input::placeholder {
+    opacity: 0.45;
 }

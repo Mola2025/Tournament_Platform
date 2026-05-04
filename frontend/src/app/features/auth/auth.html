@@ -1,15 +1,43 @@
 <section class="auth-shell">
+
     <div class="hero-card">
-        <p class="eyebrow">DuelComp</p>
-        <h1>Show off your skills against the best players in your favorite games.</h1>
-        <p class="hero-copy">
-            Desc.
-        </p>
+        <div class="hero-brand">
+            <h1 class="text-5xl md:text-6xl lg:text-7xl font-black" style="margin:0; line-height:1;">
+                Duel<span class="brand-accent">Comp</span>
+            </h1>
+        </div>
+
+        <div class="hero-text">
+            <h1 class="description" style="margin:0; line-height:1;">
+                Show off your skills against the best.
+            </h1>
+
+            <p class="hero-copy">
+                Compete in real-time tournaments, climb the leaderboards, and prove
+                you're the top player in your favorite games.
+            </p>
+        </div>
 
         <div class="hero-points">
-            <span>Icon1</span>
-            <span>Icon2</span>
-            <span>Icon3</span>
+            <span>
+                <img src="/typescript.svg" alt="TypeScript" width="18" height="18" />
+                TypeScript
+            </span>
+
+            <span>
+                <img src="/angular.svg" alt="Angular" width="18" height="18" />
+                Angular
+            </span>
+
+            <span>
+                <img src="/tailwind.svg" alt="TailwindCSS" width="18" height="18" />
+                Tailwind
+            </span>
+
+            <span>
+                <img src="/js.svg" alt="JavaScript" width="18" height="18" />
+                JavaScript
+            </span>
         </div>
     </div>
 
@@ -20,6 +48,7 @@
         </div>
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+
             @if (mode() === 'register') {
             <label>
                 <span>Name</span>

@@ -1,3 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background-color: #0a0b14;
+    /* --background del design system */
+    font-family: 'DM Sans', system-ui, sans-serif;
+    color: #f0f0ff;
+}
+
+body>app-root {
+    display: block;
+    min-height: 100vh;
+    background-color: #0a0b14;
+}

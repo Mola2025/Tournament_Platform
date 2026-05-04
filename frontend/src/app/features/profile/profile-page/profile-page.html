@@ -1,22 +1,63 @@
-<div
-    class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-[#1a1625] flex items-center justify-center py-12 px-4">
+<div class="min-h-screen bg-gray-950 text-white p-6">
 
-    <div class="w-full max-w-2xl">
+    <!-- Toast Notification -->
+    @if (toastMessage()) {
+    <div
+        class="fixed top-24 right-5 z-[100] flex items-center gap-3 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl border border-gray-700 max-w-sm animate-fade-in">
+        <span class="text-sm font-medium leading-snug">{{ toastMessage() }}</span>
+        <button (click)="dismissToast()"
+            class="ml-2 text-gray-400 hover:text-white transition-colors text-lg leading-none">×</button>
+    </div>
+    }
 
-        <!-- Error -->
-        @if (errorMessage()) {
-        <div
-            class="mb-6 bg-red-900/40 border border-red-500/50 text-red-300 text-sm rounded-xl px-4 py-3 animate-pulse">
-            {{ errorMessage() }}
+    <!-- Hero Header – cyan/teal gaming -->
+    <div class="relative mb-10 rounded-2xl overflow-hidden border border-cyan-900/50"
+        style="background: linear-gradient(135deg, rgba(6,78,59,0.22) 0%, rgba(20,184,166,0.10) 60%, rgba(10,11,20,0.95) 100%); box-shadow: 0 0 0 1px rgba(20,184,166,0.1), 0 8px 40px rgba(0,0,0,0.4);">
+
+        <!-- Grid overlay -->
+        <div class="absolute inset-0 pointer-events-none" style="
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(20,184,166,0.04) 40px, rgba(20,184,166,0.04) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(20,184,166,0.04) 40px, rgba(20,184,166,0.04) 41px);
+        "></div>
+
+        <!-- Glow orb -->
+        <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full pointer-events-none"
+            style="background: radial-gradient(circle, rgba(20,184,166,0.22) 0%, transparent 70%);"></div>
+
+        <div class="relative z-10 px-8 py-8">
+            <p
+                class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-teal-400 px-3 py-1 rounded-full border border-teal-500/30 bg-teal-500/10 mb-4">
+                <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse inline-block"></span>
+                Player Profile
+            </p>
+
+            <h1 class="font-black tracking-tight text-white leading-none mb-3"
+                style="font-family: 'Syne', system-ui, sans-serif; font-size: clamp(2.4rem, 5vw, 3.6rem); background: linear-gradient(135deg, #f0f0ff 0%, #99f6e4 55%, #2dd4bf 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Profile
+            </h1>
+
+            <p class="text-gray-400 text-sm leading-relaxed max-w-xs" style="line-height: 1.65;">
+                Your stats, identity and owned tournaments — all in one place.
+            </p>
         </div>
-        }
+    </div>
 
-        <!-- Profile -->
+    <!-- Error -->
+    @if (errorMessage()) {
+    <div class="mb-6 bg-red-900/40 border border-red-500/50 text-red-300 text-sm rounded-xl px-4 py-3 animate-pulse">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <div class="flex flex-col lg:flex-row gap-6 items-start">
+
+        <!-- Profile card -->
         @if (user()) {
         <div
-            class="bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-3xl overflow-hidden shadow-2xl mb-8">
+            class="w-full lg:w-100 flex-shrink-0 bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-3xl overflow-hidden shadow-2xl">
             <div class="p-8">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex flex-col gap-4">
                     <div>
                         <h2 class="text-3xl font-black text-white tracking-tight uppercase">
                             {{ user()?.name }}
@@ -25,7 +66,7 @@
                             @ {{ user()?.username }}
                         </p>
                     </div>
-                    <div class="bg-slate-900/80 px-4 py-2 rounded-full border border-slate-700">
+                    <div class="bg-slate-900/80 px-4 py-2 rounded-full border border-slate-700 w-fit">
                         <p class="text-slate-400 text-xs font-bold uppercase tracking-tighter">
                             Joined: <span class="text-white">{{ user()?.createdAt | date:'mediumDate' }}</span>
                         </p>
@@ -57,8 +98,8 @@
         </div>
         }
 
-        <!-- My Tournaments Section -->
-        <div class="bg-slate-800/30 backdrop-blur-md border border-slate-700/50 rounded-3xl p-8 shadow-xl">
+        <!-- My Tournaments -->
+        <div class="flex-1 bg-slate-800/30 backdrop-blur-md border border-slate-700/50 rounded-3xl p-8 shadow-xl">
             <h3 class="text-white font-black text-xl mb-6 flex items-center gap-2 uppercase tracking-tight">
                 My Tournaments
                 <span class="bg-amber-400 text-slate-900 text-[10px] px-2 py-0.5 rounded-md font-bold">OWNER</span>

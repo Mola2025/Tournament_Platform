@@ -38,11 +38,11 @@ export class MatchesDetailed {
   statusClass = computed(() => {
     switch (this.match()?.status) {
       case 'live':
-        return 'bg-green-200 text-green-800';
+        return 'bg-green-900/50 text-green-400 border border-green-700/40';
       case 'finished':
-        return 'bg-gray-300 text-gray-700';
+        return 'bg-gray-800/60 text-gray-400 border border-gray-700/40';
       default:
-        return 'bg-yellow-200 text-yellow-800';
+        return 'bg-yellow-900/30 text-yellow-400 border border-yellow-700/30';
     }
   });
 

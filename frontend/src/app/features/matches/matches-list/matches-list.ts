@@ -44,6 +44,24 @@ export class MatchesList {
 
   hasMatches = computed(() => this.filteredMatches().length > 0);
 
+  groupedMatches = computed(() => {
+    const matches = this.filteredMatches();
+    const map = new Map<string, { tournamentName: string; matches: MatchItem[] }>();
+
+    for (const match of matches) {
+      const tid = match.tournamentId;
+      const key = typeof tid === 'object' ? tid._id : (tid ?? 'unknown');
+      const name = typeof tid === 'object' ? (tid.title ?? 'Unknown Tournament') : 'Unknown Tournament';
+
+      if (!map.has(key)) {
+        map.set(key, { tournamentName: name, matches: [] });
+      }
+      map.get(key)!.matches.push(match);
+    }
+
+    return Array.from(map.values());
+  });
+
   constructor() {
     effect(() => {
       this.tournamentId(); // tracked for embedded inside tournament details

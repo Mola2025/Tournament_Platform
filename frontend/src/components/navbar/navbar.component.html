@@ -1,9 +1,13 @@
 @if (isLoggedIn()) {
 <nav class="navbar">
-  <h1 class="text-3xl font-black text-white tracking-tight">
-    Duel<span class="text-amber-400">Comp</span>
+
+  <h1 class="text-3xl font-black tracking-tight flex items-center gap-2" style="margin:0; line-height:1;">
+    <span>Duel<span class="brand-accent">Comp</span></span>
+    <img src="/pixel_retro.svg" alt="Icon" width="18" height="18" class="inline-block" />
   </h1>
-  <p class="text-gray-400 text-sm">Your competitive gaming tournament hub </p>
+
+  <p class="navbar-tagline">Your competitive gaming tournament hub</p>
+
   <div class="navbar-menu">
     <ng-container *ngIf="isLoggedIn">
       <a routerLink="/tournaments" routerLinkActive="active" class="nav-link"

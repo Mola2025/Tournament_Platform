@@ -2,3 +2,13 @@
     font-size: 20px;
     line-height: 1;
 }
+
+@keyframes gradientSlide {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 200% 0%;
+    }
+}

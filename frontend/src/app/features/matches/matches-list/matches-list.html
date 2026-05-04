@@ -1,25 +1,50 @@
-<div class="p-6">
+<div class="min-h-screen bg-gray-950 text-white p-6">
 
     <!-- Toast Notification -->
     @if (toastMessage()) {
     <div
-        class="fixed top-5 right-5 z-50 flex items-center gap-3 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl border border-gray-700 max-w-sm animate-fade-in">
-        <span class="text-sm font-medium leading-snug">{{ toastMessage() }}</span>
+        class="fixed top-24 right-5 z-[100] flex items-center gap-3 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl border border-gray-700 max-w-sm animate-fade-in">
+        <span class=" text-sm font-medium leading-snug">{{ toastMessage() }}</span>
         <button (click)="dismissToast()"
             class="ml-2 text-gray-400 hover:text-white transition-colors text-lg leading-none">×</button>
     </div>
     }
 
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Matches</h1>
-        <div class="flex gap-2">
-            <!-- <button (click)="refreshMatches()"
-                class="text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded border border-gray-300 hover:bg-gray-50 transition-colors">
-                ↺ Refresh
-            </button> -->
+    <!-- Hero Header -->
+    <div class="relative mb-10 rounded-2xl overflow-hidden border border-violet-900/50"
+        style="background: linear-gradient(135deg, rgba(109,40,217,0.2) 0%, rgba(139,92,246,0.12) 60%, rgba(10,11,20,0.95) 100%); box-shadow: 0 0 0 1px rgba(139,92,246,0.12), 0 8px 40px rgba(0,0,0,0.4);">
+
+        <div class="absolute inset-0 pointer-events-none" style="
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(139,92,246,0.04) 40px, rgba(139,92,246,0.04) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(139,92,246,0.04) 40px, rgba(139,92,246,0.04) 41px);
+        "></div>
+
+        <!-- Glow orb -->
+        <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full pointer-events-none"
+            style="background: radial-gradient(circle, rgba(139,92,246,0.28) 0%, transparent 70%);"></div>
+
+        <div class="relative z-10 flex items-center justify-between px-8 py-8">
+            <div>
+                <p
+                    class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-violet-400 px-3 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 mb-4">
+                    <span class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse inline-block"></span>
+                    Live Arena
+                </p>
+
+                <h1 class="font-black tracking-tight text-white leading-none mb-3"
+                    style="font-family: 'Syne', system-ui, sans-serif; font-size: clamp(2.4rem, 5vw, 3.6rem); background: linear-gradient(135deg, #f0f0ff 0%, #c4b5fd 55%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Matches
+                </h1>
+
+                <p class="text-gray-400 text-sm leading-relaxed max-w-xs" style="line-height: 1.65;">
+                    All active and completed matches, organized by tournament. Track scores in real time.
+                </p>
+            </div>
+
             <button (click)="goToForm()"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+                class="flex-shrink-0 font-semibold px-6 py-3 rounded-xl transition-all hover:-translate-y-0.5 active:translate-y-0 text-white shadow-lg"
+                style="background: linear-gradient(135deg, #6d28d9, #8b5cf6); box-shadow: 0 4px 24px rgba(109,40,217,0.4);">
                 + Create Match
             </button>
         </div>
@@ -27,17 +52,18 @@
 
     <!-- Loading -->
     @if (isLoading()) {
-    <div class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <div class="flex justify-center items-center py-16">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500"></div>
         <span class="ml-3 text-gray-500">Loading matches...</span>
     </div>
     }
 
     <!-- Error -->
     @if (pageError()) {
-    <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mb-4 flex items-center justify-between">
+    <div
+        class="bg-red-900/40 border border-red-700 text-red-300 rounded-xl p-4 mb-6 flex items-center justify-between text-sm">
         <span>{{ pageError() }}</span>
-        <button (click)="refreshMatches()" class="text-red-500 hover:text-red-700 text-sm underline ml-4">
+        <button (click)="refreshMatches()" class="text-red-400 hover:text-red-200 text-sm underline ml-4">
             Retry
         </button>
     </div>
@@ -45,56 +71,116 @@
 
     <!-- Empty state -->
     @if (!isLoading() && !pageError() && !hasMatches()) {
-    <div class="text-center py-16 text-gray-400">
-        <p class="text-lg mb-2">No matches found.</p>
-        <p class="text-sm">Create the first match to get started.</p>
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+        <span class="text-5xl mb-4">⚔️</span>
+        <h2 class="text-xl font-semibold text-gray-200 mb-2">No matches yet</h2>
+        <p class="text-gray-500 text-sm mb-6">Create the first match to kick off the action.</p>
     </div>
     }
 
-    <!-- Matches Grid -->
+    <!-- Matches grouped by tournament -->
     @if (!isLoading() && hasMatches()) {
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        @for (match of filteredMatches(); track match._id) {
-        <div class="card bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md">
+    <div class="space-y-10">
+        @for (group of groupedMatches(); track group.tournamentName) {
 
-            <!-- Status Badge + Delete (only for creator) -->
-            <div class="flex justify-between items-start mb-3">
-                <span
-                    class="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded-full transition-colors duration-500"
-                    [ngClass]="getStatusClass(match.status)">
-                    {{ match.status }}
-                </span>
-                @if (isCreatorOf(match)) {
-                <button (click)="deleteMatch(match._id)"
-                    class="text-red-400 hover:text-red-600 transition-colors text-sm" title="Delete match">
-                    🗑
-                </button>
+        <!-- Tournament block -->
+        <div>
+            <!-- Tournament label -->
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-xs font-bold uppercase tracking-widest text-violet-400">🏆 {{ group.tournamentName
+                    }}</span>
+                <div class="flex-1 h-px bg-violet-900/40"></div>
+                <span class="text-xs text-gray-600 font-medium">{{ group.matches.length }} match{{ group.matches.length
+                    !== 1 ? 'es' : '' }}</span>
+            </div>
+
+            <!-- Cards grid -->
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                @for (match of group.matches; track match._id) {
+                <div class="match-card relative rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-0.5"
+                    style="background: linear-gradient(145deg, #12102a 0%, #1a1535 60%, #0f0e20 100%); border-color: rgba(109,40,217,0.35); box-shadow: 0 2px 16px rgba(0,0,0,0.4);">
+
+                    <div class="absolute top-0 left-0 right-0 h-0.5"
+                        style="background: linear-gradient(90deg, #6d28d9, #8b5cf6, #6d28d9);"></div>
+
+                    <div class="p-5">
+
+                        <!-- Status Badge-->
+                        <div class="flex justify-between items-start mb-4">
+                            <span
+                                class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full transition-colors duration-500"
+                                [ngClass]="getStatusClass(match.status)">
+                                {{ match.status }}
+                            </span>
+                            @if (isCreatorOf(match)) {
+                            <button (click)="deleteMatch(match._id)"
+                                class="text-red-500/60 hover:text-red-400 transition-colors text-sm"
+                                title="Delete match">
+                                🗑 Delete
+                            </button>
+                            }
+                        </div>
+
+                        <!-- Players vs -->
+                        <div class="text-center my-4">
+                            <div class="flex items-center justify-center gap-3">
+                                <span class="text-sm font-bold text-gray-100 truncate max-w-[90px]">
+                                    {{ match.player1?.username ?? 'Player 1' }}
+                                </span>
+                                <span
+                                    class="text-xs font-black text-violet-400 px-2 py-0.5 rounded border border-violet-700/50 bg-violet-900/30">VS</span>
+                                <span class="text-sm font-bold text-gray-100 truncate max-w-[90px]">
+                                    {{ match.player2?.username ?? 'Player 2' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Score -->
+                        <div class="text-center mb-4">
+                            <div class="inline-flex items-center gap-3 px-5 py-2 rounded-xl"
+                                style="background: rgba(109,40,217,0.15); border: 1px solid rgba(109,40,217,0.25);">
+                                <span class="text-2xl font-mono font-black text-white tabular-nums">{{
+                                    match.score?.player1 ?? 0 }}</span>
+                                <span class="text-gray-600 font-light text-lg">—</span>
+                                <span class="text-2xl font-mono font-black text-white tabular-nums">{{
+                                    match.score?.player2 ?? 0 }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Winner badge (if finished and has winner) -->
+                        @if (match.status === 'finished' && match.winner) {
+                        <div class="text-center mb-4">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full"
+                                style="background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25);">
+                                🏆 {{ match.winner?.username }}
+                            </span>
+                        </div>
+                        }
+
+                        @if (match.status === 'finished' && !match.winner) {
+                        <div class="text-center mb-4">
+                            <span
+                                class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full"
+                                style="background: rgba(99,102,241,0.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.2);">
+                                🤝 Tie
+                            </span>
+                        </div>
+                        }
+
+                        @if (isCreatorOf(match)) {
+                        <button (click)="goToDetail(match._id)"
+                            class="w-full text-sm font-semibold py-2 rounded-xl transition-all duration-200 hover:brightness-110"
+                            style="background: linear-gradient(135deg, rgba(109,40,217,0.4), rgba(139,92,246,0.3)); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3);">
+                            View Detail →
+                        </button>
+                        }
+
+                    </div>
+                </div>
                 }
             </div>
-
-            <!-- Players vs -->
-            <div class="text-center my-3">
-                <p class="text-lg font-bold text-gray-800">
-                    {{ match.player1?.username ?? 'Player 1' }}
-                    <span class="text-gray-400 font-normal mx-1">vs</span>
-                    {{ match.player2?.username ?? 'Player 2' }}
-                </p>
-            </div>
-
-            <!-- Score -->
-            <div class="text-center text-3xl font-mono font-bold text-gray-700 mb-4 transition-all duration-300">
-                {{ match.score?.player1 ?? 0 }} — {{ match.score?.player2 ?? 0 }}
-            </div>
-
-            <!-- View Detail (only for creator) -->
-            @if (isCreatorOf(match)) {
-            <button (click)="goToDetail(match._id)"
-                class="w-full text-sm text-blue-600 hover:text-blue-800 border border-blue-200 hover:bg-blue-50 rounded-lg py-2 transition-colors">
-                View Detail →
-            </button>
-            }
-
         </div>
+
         }
     </div>
     }
