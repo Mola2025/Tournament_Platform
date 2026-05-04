@@ -30,6 +30,13 @@ export class AuthService {
 
     readonly currentUser = computed(() => this.session()?.user ?? null);
     //! Escribir como funciona el computed de token y isAuthenticated y como funciona tambien el signal ya que es del profesor
+
+    //! `session` is a signal that stores the global authentication state.
+    //! `token` and `currentUser` are computed properties, meaning they are derived values that update automatically
+    //! whenever the `session` changes.
+    //! `isAuthenticated` depends on the `token` and returns `true` or `false` depending on whether it exists.
+    //! You don't need to update these values manually: Angular recalculates them reactively.
+
     readonly token = computed(() => this.session()?.token ?? null);
     readonly isAuthenticated = computed(() => Boolean(this.token()));
 
