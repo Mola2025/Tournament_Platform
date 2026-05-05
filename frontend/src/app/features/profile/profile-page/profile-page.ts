@@ -5,6 +5,7 @@ import { TournamentService } from '../../../core/Services/tournament_service';
 import { TournamentItem } from '../../../core/Services/api_response_models';
 import { signal } from '@angular/core';
 import { RealtimeService } from '../../../core/Services/realtime.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-page',
@@ -18,6 +19,7 @@ export class ProfilePage {
   private readonly tournamentService = inject(TournamentService);
   private readonly realtimeService = inject(RealtimeService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   user = this.authService.currentUser;
 
@@ -65,5 +67,9 @@ export class ProfilePage {
         this.isLoading.set(false);
       }
     });
+  }
+
+  navigateToDetail(tournament: TournamentItem): void {
+    this.router.navigateByUrl(`/tournaments/${tournament._id}`);
   }
 }

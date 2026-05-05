@@ -126,7 +126,7 @@
                                  'bg-slate-700 text-slate-300')">
                             {{ t.status }}
                         </span>
-                        <a [href]="'/tournaments/' + t._id"
+                        <a (click)="navigateToDetail(t)"
                             class="text-amber-400 hover:translate-x-1 transition-transform">
                             <span class="text-lg">→</span>
                         </a>
